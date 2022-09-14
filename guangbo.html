@@ -1,0 +1,82 @@
+<html>
+<head>
+<title>初二一班广播系统</title>
+<style>
+.aaa{
+text-align:center;
+}
+.bbb{
+text-align:center;
+}
+.bbb1
+{
+line-height: 400px;
+text-align:center;
+}
+.ccc{
+position:fixed;
+left:auto;
+right:0;
+bottom:30px;
+}
+</style>
+</head>
+<body style="background-color:#000000">
+<div class="aaa">
+<font color=white size="7">初二一班广播系统</font>
+</div>
+<div class="aaa">
+<font color=white size="5" id="0">>>播报中<<</font>
+</div>
+<div class="bbb">
+<p class="ccc"><font color=white size="5" id="2">当前时间：</font><br>
+<font color=white size="5" id="3">---------------------------------------------------------</font>
+</p></div>
+<div class="bbb1">
+<p><font color=white size="7" id="demo">正在接收广播调度...</font></p>
+</div>
+<video muted width=100% height=70% controls autoplay style="position:fixed;top:100px" hidden id="444">
+<source src="http://yulinfeng16.github.io/html/kejiancao.mp4" type="video/mp4">出现错误。请稍后再试</video>
+<script>
+function function1() {
+document.getElementById("3").innerHTML=Date();
+}
+setInterval("function1()",1000);
+function guangbo(){
+document.getElementById("demo").innerHTML="无故不参加核酸需承担相应法律责任";
+}
+function guangbo1(){
+document.getElementById("demo").innerHTML="核酸时请注意带好身份证";
+}
+function guangbo2(){
+document.getElementById("demo").innerHTML="学校强烈建议您假期期间不要外\n出莱西，实在需要必须报备";
+}
+function guangbo3(){
+document.getElementById("demo").innerHTML="必须在每天九点前打卡上报健康信息摸排！";
+}
+function guangbo4(){
+document.getElementById("demo").innerHTML="广播结束";
+document.getElementById("0").innerHTML=">>广播结束<<";
+}
+function diaoyong(){
+setTimeout(guangbo,2000);
+setTimeout(guangbo1,6000);
+setTimeout(guangbo2,10000);
+setTimeout(guangbo3,14000);
+setTimeout(guangbo4,19000);
+}
+window.onload=function login()
+{
+var timess=(new Date().getHours())+(new Date().getMinutes())/100;
+if((timess>=8.4&&timess<=9.4)||(timess>=15.2&&timess<=15.5))
+{
+document.getElementById("444").hidden=false;
+setTimeout(diaoyong,330000);
+}
+else{
+document.getElementById("444").hidden=true;
+setTimeout(diaoyong,10);
+}}
+</script>
+</body>
+</html>
