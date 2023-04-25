@@ -1,18 +1,11 @@
 <html>
-<head><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<style>
-  @media screen and (orientation: landscape) {
-  body {transform: rotate(90deg);
-    width: 100%;
-    height: 100%;
-  }
-}
+<head><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
 
-  #neon-btn {
+<style>#neon-btn {
   display: flex;
   align-items: center;
   justify-content: space-around;
-  height: 100vh;
+  height: 10%;
   background: #031628; 
 }
 
@@ -20,8 +13,8 @@
   border: 1px solid;
   background-color: transparent;
   text-transform: uppercase;
-  font-size: 14px;
-  padding: 10px 20px;
+  font-size: 50;
+  padding:30px 40px;
   font-weight: 300;
 }
 
@@ -61,13 +54,27 @@
   -webkit-box-shadow: 10px 10px 99px 6px rgba(185, 231, 105, 1);
   -moz-box-shadow: 10px 10px 99px 6px rgba(185, 231, 105, 1);
   box-shadow: 10px 10px 99px 6px rgba(185, 231, 105, 1);
-}</style>
-  <script>
+}
+
+</style>
+</head>
+<body style="background-color:black">
+<div style="position:fixed;width:100%;height:100%;z-index:0">
+<video class="wbh" id="wbh" style="width= 100%; height=100%; object-fit: fill" autoplay>
+<source src="https://yulinfeng16.github.io/html/ST-480.mp4" type="video/mp4">
+抱歉，玉岭模拟无法接入当前浏览器。
+</video></div>
+<div id="neon-btn" style="width:100%;height:100%;background-color:black;position:fixed;z-index:1">
+<button type="button" class="btn two" onclick="btn()">Touch to start</button>
+</div>
+<script>
 
 var video=document.querySelector("video");
+var vivi=document.getElementById("wbh");
+  function btn(){
 
-  function btn(){document.getElementById('neon-btn').style.display='none';
-
+document.getElementById('neon-btn').style.display='none';
+   
                  //hello im ylfcy
 
 video.play();var docElm = document.documentElement;
@@ -102,19 +109,10 @@ video.play();var docElm = document.documentElement;
 
             elem.msRequestFullscreen();
 
-        }}
+        }vivi.style.height="100%";
+   vivi.style.width="100%";
+}
 
 </script>
-</head>
-<body style="background-color:black">
-<div style="position:fixed;z-index:0">
-<video width=100% height=100% autoplay>
-<source src="https://yulinfeng16.github.io/html/ST-480.mp4" type="video/mp4">
-抱歉，玉岭模拟无法接入当前浏览器。
-</video></div>
-<div id="neon-btn" style="width:100%;height:100%;background-color:black;position:fixed;z-index:1">
-<button type="button" onclick='btn()' class="btn two">Touch to start</button>
-</div>
-
 </body>
 </html>
