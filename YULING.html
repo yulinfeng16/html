@@ -61,16 +61,47 @@
   transform: rotate(90deg);
   }
 }</style>
+<style>
+.item9 {
+                padding-top: 12%;
+                background: linear-gradient(to left, #2CD5FF, #2CD5FF) left top no-repeat,
+                linear-gradient(to bottom, #2CD5FF, #2CD5FF) left top no-repeat,
+                linear-gradient(to left, #2CD5FF, #2CD5FF) right top no-repeat,
+                linear-gradient(to bottom, #2CD5FF, #2CD5FF) right top no-repeat,
+                linear-gradient(to left, #2CD5FF, #2CD5FF) left bottom no-repeat,
+                linear-gradient(to bottom, #2CD5FF, #2CD5FF) left bottom no-repeat,
+                linear-gradient(to left, #2CD5FF, #2CD5FF) right bottom no-repeat,
+                linear-gradient(to left, #2CD5FF, #2CD5FF) right bottom no-repeat;
+                background-size: 4px 20px, 20px 4px, 4px 20px, 20px 4px;
+                border: 1px solid #073F97;
+                position: relative;
+            }
+            .item9 span {
+                display: inline-block;
+                width: 35%;
+                background:#05286C;
+                font-size: 14px;
+                position: absolute;
+                top: 0;
+                left: 32%;
+                padding: 4px 0px;
+                color: #19E8FE;
+                border-radius: 0 0 10px 10px;
+
+                }
+
+</style>
 </head>
 <body style="background-color:black">
-<div style="position:fixed;width:100%;height:100%;z-index:0">
+<div style="position:fixed;width:100%;height:100%;z-index:8">
 <video class="wbh" id="wbh" style="width= 100%; height=100%; object-fit: fill" autoplay>
 <source src="https://yulinfeng16.github.io/html/ST-480.mp4" type="video/mp4">
 抱歉，玉岭模拟无法接入当前浏览器。
 </video></div>
-<div id="neon-btn" style="width:100%;height:100%;background-color:black;position:fixed;z-index:1">
+<div id="neon-btn" style="width:100%;height:100%;background-color:black;position:fixed;z-index:9">
 <button type="button" class="btn two" onclick="btn()">Touch to start</button>
-</div>
+</div><div></br>
+<div style="position:relative;margin:0 auto;text-align:center;z-index:7" class="item9"> <span>title</span> 9号四角高亮边框 </div></div>
 <script>
 
 var video=document.querySelector("video");
@@ -116,7 +147,9 @@ video.play();var docElm = document.documentElement;
         }vivi.style.height="100%";
    vivi.style.width="100%";
 }
-
+vivi.onended = function() {
+      vivi.style.display='none';
+ };
 </script>
 </body>
 </html>
