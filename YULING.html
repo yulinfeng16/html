@@ -1,6 +1,7 @@
 <html>
 <head><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
-
+<meta charset="utf-8">
+<link rel="stylesheet" type="text/css" href="http://yulinfeng16.github.io/html/inputxiaoguo.css">
 <style>#neon-btn {
   display: flex;
   align-items: center;
@@ -119,6 +120,7 @@ height: 100vh;
 </style>
 <style>
 .item9 {
+
                 padding-top: 12%;
                 background: linear-gradient(to left, #2CD5FF, #2CD5FF) left top no-repeat,
                 linear-gradient(to bottom, #2CD5FF, #2CD5FF) left top no-repeat,
@@ -132,7 +134,7 @@ height: 100vh;
                 border: 1px solid #073F97;
                 position: relative;
             }
-            .item9 span {
+            .item9span {
                 display: inline-block;
                 width: 35%;
                 background:#05286C;
@@ -145,23 +147,114 @@ height: 100vh;
                 border-radius: 0 0 10px 10px;
 
                 }
-
+.abcdefgaeee
+{
+box-shadow:0px 0px 20px #ffffff;
+}
+a {
+	position: relative;
+	display: inline-block;
+	padding: 1.2em 2em;
+	text-decoration: none;
+	text-align: center;
+	cursor: pointer;
+	user-select: none;
+	color: white;
+	
+	&::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 0;
+		bottom: 0;
+		right: 0;
+		background: linear-gradient(135deg, #a0a0ff, #0909ff);
+		border-radius: 4px;
+		transition: box-shadow .5s ease, transform .2s ease; 
+		will-change: transform;
+		box-shadow: 0 2px 5px rgba(0, 0, 0, .2);
+		transform:
+			translateY(var(--ty, 0))
+			rotateX(var(--rx, 0))
+			rotateY(var(--ry, 0))
+			translateZ(var(--tz, -12px));
+	}
+	
+	&:hover::before {
+		box-shadow: 0 5px 15px rgba(0, 0, 0, .3);
+	}
+	
+	&::after {
+		position: relative;
+		display: inline-block;
+		content: attr(data-title);
+		transition: transform .2s ease; 
+		font-weight: bold;
+		letter-spacing: .01em;
+		will-change: transform;
+		transform:
+			translateY(var(--ty, 0))
+			rotateX(var(--rx, 0))
+			rotateY(var(--ry, 0));
+	}
+}
 </style>
 </head>
 <body style="background-color:black"><div class="wrap">
-<div style="position:fixed;width:100%;height:100%;z-index:8">
+<div style="position:fixed;width:100%;height:100%;z-index:8" id="aaadjcw">
 <video class="wbh" id="wbh" style="width= 100%; height=100%; object-fit: fill" autoplay>
 <source src="https://yulinfeng16.github.io/html/ST-480.mp4" type="video/mp4">
-抱歉，玉岭模拟无法接入当前浏览器。
+<p style="color:white;">抱歉，玉岭模拟画面无法接入当前浏览器。</p>
 </video></div>
 <div id="neon-btn" style="width:100%;height:100%;background-color:black;position:fixed;z-index:9">
 <button type="button" class="btn two" onclick="btn()">Touch to start</button>
-</div><div></br>
-<div style="position:relative;margin:0 auto;text-align:center;z-index:7" class="item9"> <span>title</span> 9号四角高亮边框 </div></div>
-</div><script>
+</div><div></br><div class="abcdefgaeee">
+<div style="position:relative;margin:0 auto;text-align:center;z-index:7" class="item9"> <span class="item9span">玉岭天文员工登录</span>
+				<span class="input input--kuro">
+					<input class="input__field input__field--kuro" type="text" id="input-username">
+					<label class="input__label input__label--kuro" for="input-7">
+						<span class="input__label-content input__label-content--kuro">用户名</span>
+					</label>
+				</span></br>
+<span class="input input--kuro">
+					<input class="input__field input__field--kuro" type="text" id="input-password">
+					<label class="input__label input__label--kuro" for="input-7">
+						<span class="input__label-content input__label-content--kuro">密码</span>
+					</label>
+				</span></br><a onclick="abc()" data-title="Verify"></a></br>
+</div></div>
+</div></div>
+<script src="http://www.ibloger.net/assets/demos/css3-input-14-effects/js/classie.js"></script>
+<script>
 
+				[].slice.call( document.querySelectorAll( 'input.input__field' ) ).forEach( function( inputEl ) {
+					// in case the input is already filled..
+					if( inputEl.value.trim() !== '' ) {
+						classie.add( inputEl.parentNode, 'input--filled' );
+					}
+
+					// events:
+					inputEl.addEventListener( 'focus', onInputFocus );
+					inputEl.addEventListener( 'blur', onInputBlur );
+				} );
+
+				function onInputFocus( ev ) {
+					classie.add( ev.target.parentNode, 'input--filled' );
+				}
+
+				function onInputBlur( ev ) {
+					if( ev.target.value.trim() === '' ) {
+						classie.remove( ev.target.parentNode, 'input--filled' );
+					}
+				}
+			
 var video=document.querySelector("video");
 var vivi=document.getElementById("wbh");
+
+  function abc()
+{
+alert('test');
+}
   function btn(){
 
 document.getElementById('neon-btn').style.display='none';
@@ -169,43 +262,55 @@ document.getElementById('neon-btn').style.display='none';
                  //hello im ylfcy
 
 video.play();var docElm = document.documentElement;
-
-        //W3C
-
-        if (docElm.requestFullscreen) {
-
+//W3C
+if (docElm.requestFullscreen) {
             docElm.requestFullscreen();
-
         }
-
         //FireFox
-
-        else if (docElm.mozRequestFullScreen) {
-
-            docElm.mozRequestFullScreen();
-
-        }
-
+else if (docElm.mozRequestFullScreen) {docElm.mozRequestFullScreen();}
         //Chrome等
+else if (docElm.webkitRequestFullScreen) {docElm.webkitRequestFullScreen();}
+//IE11
+else if (elem.msRequestFullscreen) {
+elem.msRequestFullscreen();}vivi.style.height="100%";vivi.style.width="100%";}vivi.onended = function() {vivi.style.display='none';document.getElementById('aaadjcw').style.display='none';};</script>
+<script>const docStyle = document.documentElement.style
+const aElem = document.querySelector('a')
+const boundingClientRect = aElem.getBoundingClientRect()
 
-        else if (docElm.webkitRequestFullScreen) {
+aElem.onmousemove = function(e) {
 
-            docElm.webkitRequestFullScreen();
-
-        }
-
-        //IE11
-
-        else if (elem.msRequestFullscreen) {
-
-            elem.msRequestFullscreen();
-
-        }vivi.style.height="100%";
-   vivi.style.width="100%";
+	const x = e.clientX - boundingClientRect.left
+	const y = e.clientY - boundingClientRect.top
+	
+	const xc = boundingClientRect.width/2
+	const yc = boundingClientRect.height/2
+	
+	const dx = x - xc
+	const dy = y - yc
+	
+	docStyle.setProperty('--rx', `${ dy/-1 }deg`)
+	docStyle.setProperty('--ry', `${ dx/10 }deg`)
+	
 }
-vivi.onended = function() {
-      vivi.style.display='none';
- };
-</script>
+
+aElem.onmouseleave = function(e) {
+	
+	docStyle.setProperty('--ty', '0')
+	docStyle.setProperty('--rx', '0')
+	docStyle.setProperty('--ry', '0')
+	
+}
+
+aElem.onmousedown = function(e) {
+	
+	docStyle.setProperty('--tz', '-25px')
+	
+}
+
+document.body.onmouseup = function(e) {
+	
+	docStyle.setProperty('--tz', '-12px')
+	
+}</script>
 </body>
 </html>
