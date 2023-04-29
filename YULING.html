@@ -223,7 +223,15 @@ a {
 					</label>
 				</span></br><button onclick='abc()'>验证</button></br>
 </div></div>
-</div></div>
+</div><div class="okk" id="123123hahaha" style="position:relative;margin:0 auto;z-index:10;height:100%;width:100%;background-color:black;">
+<dialog open style="position:relative;text-align:center;">
+<p>验证通过。欢迎您进入玉岭天文系统操作页面。您当前有  1  个任务未处理。</p>
+<form method="dialog">
+    <button>OK</button>
+  </form>
+</dialog>
+</div>
+</div>
 <script src="http://www.ibloger.net/assets/demos/css3-input-14-effects/js/classie.js"></script>
 <script>
 
@@ -250,13 +258,15 @@ a {
 			
 var video=document.querySelector("video");
 var vivi=document.getElementById("wbh");
-
+document.getElementById('123123hahaha').style.display='none';
   function abc()
 {
 var value1 = document.getElementById("input-username").value;
 var v1alue1 = document.getElementById("input-password").value;
 if(value1=="accno_8203"&&v1alue1=="5Zue5pS26Lef6Liq")
 {
+document.getElementById('123123hahaha').style.display='block';
+document.getElementById('abcdefgaeee').style.display='none';
 }
 else
 {
@@ -268,7 +278,6 @@ window.location.href="about::blank#blocked";
 
 document.getElementById('neon-btn').style.display='none';
    
-                 //hello im ylfcy
 
 video.play();var docElm = document.documentElement;
 //W3C
