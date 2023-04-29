@@ -203,7 +203,7 @@ a {
 <body style="background-color:black"><div class="wrap">
 <div style="position:fixed;width:100%;height:100%;z-index:8" id="aaadjcw">
 <video class="wbh" id="wbh" style="width= 100%; height=100%; object-fit: fill" autoplay>
-<source src="https://yulinfeng16.github.io/html/ST-480.mp4" type="video/mp4">
+<source src="https://yulinfeng16.github.io/html/ST-1080.mp4" type="video/mp4">
 <p style="color:white;">抱歉，玉岭模拟画面无法接入当前浏览器。</p>
 </video></div>
 <div id="neon-btn" style="width:100%;height:100%;background-color:black;position:fixed;z-index:9">
@@ -221,7 +221,7 @@ a {
 					<label class="input__label input__label--kuro" for="input-7">
 						<span class="input__label-content input__label-content--kuro">密码</span>
 					</label>
-				</span></br><a onclick="abc()" data-title="Verify"></a></br>
+				</span></br><button onclick='abc()'>验证</button></br>
 </div></div>
 </div></div>
 <script src="http://www.ibloger.net/assets/demos/css3-input-14-effects/js/classie.js"></script>
@@ -253,7 +253,16 @@ var vivi=document.getElementById("wbh");
 
   function abc()
 {
-alert('test');
+var value1 = document.getElementById("input-username").value;
+var v1alue1 = document.getElementById("input-password").value;
+if(value1=="accno_8203"&&v1alue1=="5Zue5pS26Lef6Liq")
+{
+}
+else
+{
+alert('[玉岭线索]对于问题，先解决一层试试再说。');
+window.location.href="about::blank#blocked";
+}
 }
   function btn(){
 
@@ -272,11 +281,12 @@ else if (docElm.mozRequestFullScreen) {docElm.mozRequestFullScreen();}
 else if (docElm.webkitRequestFullScreen) {docElm.webkitRequestFullScreen();}
 //IE11
 else if (elem.msRequestFullscreen) {
-elem.msRequestFullscreen();}vivi.style.height="100%";vivi.style.width="100%";}vivi.onended = function() {vivi.style.display='none';document.getElementById('aaadjcw').style.display='none';};</script>
-<script>const docStyle = document.documentElement.style
+elem.msRequestFullscreen();}vivi.style.height="100%";vivi.style.width="100%";ccc();}vivi.onended = function() {vivi.style.display='none';document.getElementById('aaadjcw').style.display='none';};
+const docStyle = document.documentElement.style
 const aElem = document.querySelector('a')
-const boundingClientRect = aElem.getBoundingClientRect()
-
+var boundingClientRect;
+function ccc(){boundingClientRect = aElem.getBoundingClientRect()
+}
 aElem.onmousemove = function(e) {
 
 	const x = e.clientX - boundingClientRect.left
