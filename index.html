@@ -23,7 +23,7 @@
     <input type="radio" id="female" name="gender" value="0">
     <label for="female">女</label>
     </br>
-    <input type="file" id="imageUpload" accept="image/*" /><button onclick="abc()">开始制作</button><button onclick="rfresh()">清除</button>
+    <input type="file" id="imageUpload" accept="image/*" /><button id="button1" onclick="abc()">开始制作</button><button onclick="rfresh()">清除</button>
     <div id="response"></div>
     <p id="pro">
         绘图中……
@@ -59,7 +59,7 @@
         function abc()
         {imgElement.src = "";
           const file = document.getElementById('imageUpload').files[0];
-             if (file) {
+             if (file) {document.getElementById("button1").disabled = true;
          document.getElementById("pro").style.display = 'block';
                 var reader = new FileReader();
                 reader.onload = function(e) {
@@ -92,7 +92,7 @@
           body: jsonString
         })
         .then(response => response.json())
-        .then(data => {console.log('information:', data.result[0]);document.getElementById("pro").style.display = 'none';imgElement.src = "data:image/png;base64,"+data.result[0];})
+        .then(data => {console.log('information:', data.result[0]);document.getElementById("pro").style.display = 'none';imgElement.src = "data:image/png;base64,"+data.result[0];document.getElementById("button1").disabled = false;})
         .catch((error) => console.error('Error:', error));
         
         
