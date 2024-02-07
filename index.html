@@ -23,15 +23,22 @@
     <input type="radio" id="female" name="gender" value="0">
     <label for="female">女</label>
     </br>
-    <input type="file" id="imageUpload" accept="image/*">
+    <input type="file" id="imageUpload" accept="image/*" /><button onclick="abc()">开始制作</button><button onclick="rfresh()">清除</button>
     <div id="response"></div>
+    <p id="pro">
+        绘图中……
+    </p>
     <img id="img1" src="" class="imger">
     <p>当您上传了图片，绘制好的图片大约10-20秒将会在这里显示。</br>AI画图需要时间，无法立即显示图片为正常情况，请耐心等待。如果很久都没有反应，请再换一张试试或者反馈至开发者。</br></p></img>
 
     <script>
         let base64String;
+        document.getElementById("pro").style.display = 'none';
+        var imgElement = document.getElementById('img1');
         document.getElementById('imageUpload').addEventListener('change',async function(event) {
             const file = event.target.files[0];
+          imgElement.src = "";
+          document.getElementById("pro").style.display = 'block';
              if (file) {
                 var reader = new FileReader();
                 reader.onload = function(e) {
@@ -45,6 +52,27 @@
                 reader.readAsDataURL(file);
             }
         });
+        function rfresh()
+        {
+          history.go(0);
+        }
+        function abc()
+        {imgElement.src = "";
+          const file = document.getElementById('imageUpload').files[0];
+             if (file) {
+         document.getElementById("pro").style.display = 'block';
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    // 将Base64编码字符串保存到全局变量
+                    base64String = e.target.result;
+                    console.log("Base64 Encoded String: ", base64String);
+                    
+                    // 现在可以在其他地方使用base64String变量
+                    doSomethingWithBase64String(base64String);
+                };
+                reader.readAsDataURL(file);
+            }
+        }
         function doSomethingWithBase64String(bs)
         {
           
@@ -54,7 +82,6 @@
             "ismale":item
         };
         
-        var imgElement = document.getElementById('img1');
         // 将对象转换为JSON字符串
         let jsonString = JSON.stringify(imageObject);
           fetch('https://571976fy50.yicp.fun/process_image', {
@@ -65,7 +92,7 @@
           body: jsonString
         })
         .then(response => response.json())
-        .then(data => {console.log('information:', data.result[0]);imgElement.src = "data:image/png;base64,"+data.result[0];})
+        .then(data => {console.log('information:', data.result[0]);document.getElementById("pro").style.display = 'none';imgElement.src = "data:image/png;base64,"+data.result[0];})
         .catch((error) => console.error('Error:', error));
         
         
