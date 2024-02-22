@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>3D Glass Fragments Scene</title>
+<meta charset='utf-8'>
+    <style>
+        body { margin: 0; overflow: hidden; }
+#info {
+	position: absolute;
+	top: 10px;
+	width: 100%;
+	text-align: left;
+	z-index: 100;
+	display:block;filter: blur(2px);
+}
+    </style>
+    <script type="importmap"> { "imports": { "three": "https://unpkg.com/three@v0.161.0/build/three.module.js", "three/addons/": "https://unpkg.com/three@v0.161.0/examples/jsm/" } } 
+</script>
+</head>
+<body><div id="info">
+<font color="#777777"></br>&nbsp;&nbsp;&nbsp;从 渲染：未知……</font></div>
+<div id="info" style="top:auto;bottom:0;filter: blur(0);opacity:0;"><font color="#ffffff"><h1>这里展示信息……</h1></font></div>
+    <script type="module">import * as THREE from 'three'; import { OrbitControls } from 'three/addons/controls/OrbitControls.js'; 
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
+import { UnrealBloomPass} from "three/addons/postprocessing/UnrealBloomPass.js";
+import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
+        var scene, camera, renderer;
+        var glassFragment;
+        var loader = new GLTFLoader();
+        init();
+        animate();
+var controls,composer ;
+        function init() {
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+            camera.position.z = 5;
+
+            renderer = new THREE.WebGLRenderer({antialias: true});
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            document.body.appendChild(renderer.domElement);
+controls= new OrbitControls( camera, renderer.domElement );
+            controls.autoRotate=true;
+
+            loader.load('glasses.glb', function(gltf) {
+                glassFragment = gltf.scene.children[0];
+                glassFragment.scale.set(0.01, 0.01, 0.01); // Adjust the size as needed
+                for (var i = 0; i < 10000; i++) { // Generate a lot of fragments
+                    var fragment = glassFragment.clone();
+                    fragment.position.x = (Math.random()-0.5  ) * 10;
+                    fragment.position.y = (Math.random()-0.5) * 10;
+                    fragment.position.z = (Math.random()-0.5) * 10;
+                    scene.add(fragment);
+                }
+            }, undefined, function(error) {
+                console.error(error);
+            });
+ // Add ambient light to the scene
+            var ambientLight = new THREE.AmbientLight(0xffffff, 10);
+            scene.add(ambientLight);
+
+            // Add a point light source
+            var pointLight = new THREE.PointLight(0xffdddd, 25, 0,0.5);
+            pointLight.position.set(0, 5, 0);
+            scene.add(pointLight);
+var pointLight2 = new THREE.PointLight(0xddffdd, 25, 0);
+            pointLight.position.set(0, 0, 0);
+            scene.add(pointLight2);
+var pointLight3 = new THREE.PointLight(0xddddff,25, 0);
+            pointLight.position.set(0, 10, 0);
+            scene.add(pointLight3);
+setEventsMouse();
+//设置光晕
+        composer = new EffectComposer(renderer);        //效果组合器
+            //创建通道
+        var renderScene = new RenderPass(scene, camera);    
+            //创建通道
+        var bloomPass = new UnrealBloomPass(
+            //参数一：泛光覆盖场景大小，二维向量类型
+            new THREE.Vector2(window.innerWidth, window.innerHeight),
+            //参数二：bloomStrength 泛光强度，值越大明亮的区域越亮，较暗区域变亮的范围越广
+            0.1,
+            //参数三：bloomRadius 泛光散发半径
+            0.1,
+            //参数四：bloomThreshold 泛光的光照强度阈值，如果照在物体上的光照强度大于该值就会产生泛光
+            2
+        );
+//赋值间接对象
+            
+
+var params = {
+            exposure: 0,
+            bloomStrength: 1.5,
+            bloomThreshold: 0,
+            bloomRadius: 0,
+            };
+                bloomPass.threshold = params.bloomThreshold;
+                bloomPass.strength = params.bloomStrength;
+                bloomPass.radius = params.bloomRadius;
+                composer.addPass(renderScene);
+                composer.addPass(bloomPass);
+           
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+		controls.update();
+camera.layers.set(0);
+            composer.render();
+composer.layers.set(1);
+            renderer.render(scene, camera);
+        }
+//定义鼠标事件
+        function setEventsMouse(){
+            //点击了鼠标左键
+            window.addEventListener( 'click', function(e){
+                if(e.button===0){
+                    console.log('x:'+e.x);
+               console.log('y:'+e.y);
+                }
+            } );
+ 
+            
+        
+        }
+ 
+    </script>
+</body>
+</html>
