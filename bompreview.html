@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>物料管理器</title>
+    <style>
+        .hidden{
+            display:none;
+        }
+    </style>
+    <link href="http://libs.baidu.com/bootstrap/3.3.0/css/bootstrap.css" rel="stylesheet">
+    <script src="http://libs.baidu.com/bootstrap/3.3.0/js/bootstrap.js"></script>
+	<script src="http://libs.baidu.com/jquery/2.0.0/jquery.js"></script>
+    <style>
+        button{
+            height: 50px;
+            width: 100%;
+            background-color: orangered;
+            background-image: linear-gradient(0deg,  rgba(255,255,255,0.2) 40%, rgba(255,255,255,0.5) 71%);
+            border-radius: 20px;
+            border:0;
+        }
+        body{
+            background-color: ghostwhite;
+            text-align: center;
+            -webkit-text-fill-color: white;
+            background-color: #666666;
+        }
+        .a123{
+            -webkit-text-fill-color: black;
+        }
+    </style>
+</head>
+<body>
+
+<h1>物料管理器</h1>
+<h2>物料类型展示</h2><br><button onclick="fetchDataAndUpdateList()">刷新列表</button><br>
+<button id="toggleButton" onclick="tMT()">收起</button><br>
+<table class="table table-striped  table-bordered" style="background-color: rgb(124, 144, 156);-webkit-text-fill-color: black;">
+  <caption>多于三项后点击上方按钮可以展开/收起</caption>
+  <thead>
+    <tr>
+      <th>名称</th>
+      <th>标签</th>
+      <th>获取方式</th>
+      <th>描述</th>
+<th>操作</th>
+    </tr>
+  </thead>
+  <tbody id='list-container'>
+    <tr>
+      <td>螺丝钉</td>
+      <td>工具</td>
+      <td>可购买</td>
+      <td>很好</td>
+<td>示例元素不能被用户操作</td>
+    </tr>
+    <!-- 动态填充！ -->
+  </tbody>
+</table>
+<!-- 物料类型管理 -->
+<h2>管理物料类型</h2>
+<form id="type-form">
+    <label for="type-name">物料类型：</label>
+    <input class="a123" type="text" id="type-name" name="type_name" pattern="(([\u4e00-\u9fa5])|([0-9])|([A-Z])|([a-z]))*" required><br><br>
+
+    <label for="type-tags">标签（用逗号分隔）：</label>
+    <input class="a123" type="text" id="type-tags" name="type_tags" pattern="(([\u4e00-\u9fa5])|([0-9])|([A-Z])|([a-z]))*" required><br><br>
+
+    <label for="type-method">获取方式：</label>
+    <input class="a123" type="text" id="type-method" name="type_method" pattern="(([\u4e00-\u9fa5])|([0-9])|([A-Z])|([a-z]))*" required><br><br>
+
+    <label for="type-description">描述：</label>
+    <input class="a123" id="type-description" pattern="(([\u4e00-\u9fa5])|([0-9])|([A-Z])|([a-z]))*" name="type_description" required></textarea><br><br>
+
+    <button type="submit" >添加物料类型</button>
+</form>
+
+<hr>
+<button id="toggleButton2" onclick="tnt()">收起</button><br>
+<table class="table table-striped  table-bordered" style="background-color: rgb(124, 144, 156);-webkit-text-fill-color: black;">
+    <caption>多于三项后点击上方按钮可以展开/收起</caption>
+    <thead>
+      <tr>
+        <th>名称</th>
+        <th>标签</th>
+        <th>获取方式</th>
+        <th>物料描述</th>
+        <th>物料数量</th>
+        <th>注释</th>
+  <th>操作</th>
+      </tr>
+    </thead>
+    <tbody id='list-container2'>
+      <tr >
+        <td>螺丝钉</td>
+        <td>工具</td>
+        <td>可购买</td>
+        <td>很好</td>
+        <td>1000</td>
+        <td>红星文具厂</td>
+  <td>示例元素不能被用户操作</td>
+      </tr>
+      <!-- 动态填充！ -->
+    </tbody>
+  </table>
+<!-- 物料选择和表单填写 -->
+<h2>选择物料并填写表单</h2>
+<form id="material-form">
+    <label for="material-type">物料类型：</label>
+    <select class="a123" id="material-type" name="material_type" required>
+        <!-- 物料类型选项将由JavaScript动态填充 -->
+    </select><br><br>
+
+    <label for="quantity">数量：</label>
+    <input class="a123" type="number" id="quantity" name="quantity" pattern="[0-9]*" required><br><br>
+
+    <label for="description">注释：</label>
+    <input class="a123" id="description" pattern="(([\u4e00-\u9fa5])|([0-9])|([A-Z])|([a-z]))*" name="description"></textarea><br><br>
+
+    <button type="submit">添加至表单</button>
+</form>
+
+<script>
+
+    // Function to fetch data from the Django API and update the list
+    var materialtypelist;
+    function pmltd()//更新并推送列表
+{
+    jsondataa={
+                    'id':86645555,
+                    'materials':materialtypelist
+                };
+    fetch('../api/push-list/', {
+                method: 'POST', // 或 'PUT'
+                headers: {
+                    'Content-Type': 'application/json',
+                    // 如果你的API需要认证，可以在这里添加认证头部
+                    // 'Authorization': 'Bearer your-token-here'
+                },
+                body: JSON.stringify(jsondataa)
+            })
+            .then(response => {let r=response.json();
+                console.log('Response:', r);
+                //response.then((result)=>{
+                    
+            })
+            .then(data => {
+                //console.log(result);
+                //    alert("指定的操作成功完成！")
+                
+            })
+            .catch((error) => {
+                console.log(JSON.stringify(jsondataa))
+                console.error('Error:', error);
+            });
+            setTimeout(fetchDataAndUpdateList,100);
+}
+function fetchDataAndUpdateList() {
+    fetch('../api/get-list/')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log(data)
+            const listContainer = document.getElementById('list-container');
+            const materialtypeblank=document.getElementById('material-type');
+            listContainer.innerHTML = ''; // Clear the current list
+            materialtypeblank.innerHTML='';
+            materialtypelist=data;
+            // Create a new list and append list items
+            let itemmid=0;
+            data.forEach(item => {
+                const li = document.createElement('tr');
+                li.className = 'list-item';
+                li.id='please';
+                li.innerHTML = `
+                    <td>${item.name}</td>
+                    <td> ${item.tags}</td>
+                    <td> ${item.method}</td> 
+                    <td>${item.description}</td>
+                    <td><input type="button" onclick="delete_material(\'${item.name}\',\'${item.tags}\',\'${item.method}\',\'${item.description}\')" value="删除"/></td>
+                `;
+                let th =document.createElement('option');
+                th.innerHTML=`${item.name}`;
+                th.value=`'%'+${item.name}+'%'+${item.tags}+'%'+${item.method}+'%'+${item.description}`;
+                materialtypeblank.appendChild(th);
+                itemmid=itemmid+1;
+                listContainer.appendChild(li);
+            });
+
+            //listContainer.appendChild(ul); // Append the list to the container
+        })
+        .catch(error => {
+            console.error('There has been a problem with your fetch operation:', error);
+        });
+}
+
+    // Call fetchDataAndUpdateList on page load
+    document.addEventListener('DOMContentLoaded', fetchDataAndUpdateList);
+    //js is here
+    document.addEventListener('DOMContentLoaded', function(){
+        let temporaryvariablea=document.getElementById('list-container2');
+        temporaryvariablea.innerHTML='';});
+    document.addEventListener('DOMContentLoaded', function() {
+    var listItems = document.querySelectorAll('#please');
+    if (listItems.length > 3) {
+        for (var i = 3; i < listItems.length; i++) {
+            listItems[i].classList.add('hidden');
+        }
+    }
+});
+
+function delete_material(mname,mtags,mmethod,mdescription)
+{
+    const condition = (item) => (item.name ==mname&&item.tags==mtags&&item.method==mmethod&&item.description==mdescription);
+    let res=confirm("注意，元素删除后将不可恢复。您正在删除："+mname);
+    // 删除第一个满足条件的元素
+
+    fetchDataAndUpdateList();
+    setTimeout(function(){
+    let index = materialtypelist.findIndex(condition);
+    if (index !== -1 && res) {
+        materialtypelist.splice(index, 1);
+    }
+    
+    //materialtypelist.splice(mname,1);
+    pmltd();},100);
+}
+function tnt() {//展开或收起下方列表
+    var listItems = document.querySelectorAll('#user-xd');
+    var button = document.getElementById('toggleButton2');
+    if (listItems.length > 3){
+    var isHidden = listItems[3].classList.contains('hidden');
+    }
+    for (var i = 3; i < listItems.length; i++) {
+        if (isHidden) {
+            listItems[i].classList.remove('hidden');
+            button.textContent = '收起';
+        } else {
+            listItems[i].classList.add('hidden');
+            button.textContent = '展开';
+        }
+    }
+}
+function tMT() {//展开或收起
+    var listItems = document.querySelectorAll('#please');
+    var button = document.getElementById('toggleButton');
+    if (listItems.length > 3){
+    var isHidden = listItems[3].classList.contains('hidden');
+    }
+    for (var i = 3; i < listItems.length; i++) {
+        if (isHidden) {
+            listItems[i].classList.remove('hidden');
+            button.textContent = '收起';
+        } else {
+            listItems[i].classList.add('hidden');
+            button.textContent = '展开';
+        }
+    }
+}
+// JavaScript代码，用于处理表单提交等逻辑
+document.getElementById('material-form').addEventListener('submit', function(event) {
+    event.preventDefault();
+    // 这里可以添加代码，将表单数据发送到服务器
+    // ...
+    var blank_editing=document.getElementById('list-container2');
+    
+    let materialtype1=document.getElementById('material-type').value;
+    
+    const condition = (item) => (item.name ==mname&&item.tags==mtags&&item.method==mmethod&&item.description==mdescription);
+    let index = materialtypelist.findIndex(condition);
+    if (index !== -1 ) {
+        //materialtypelist.splice(index, 1);
+        let zerokj=document.createElement('tr');
+        let newelement=document.createElement('td');
+        newelement.innerHTML=materialtype1;
+        zerokj.appendChild(newelement);
+        blank_editing.appendChild(zerokj);
+    }
+    else{
+        alert('你好像在尝试添加不存在的物料。');
+    }
+    
+});
+
+document.getElementById('type-form').addEventListener('submit', function(event) {
+    event.preventDefault();
+    // 这里可以添加代码，将表单数据发送到服务器
+    // ...
+    var name_element=document.getElementById('type-name');
+    var tags_element=document.getElementById('type-tags');
+    var method_element=document.getElementById('type-method');
+    var description_element=document.getElementById('type-description');
+    var new_data={'id':86645555,'name':name_element.value.toString(),
+                  'tags':tags_element.value.toString(),
+                  'method':method_element.value.toString(),
+                  'description':description_element.value.toString()};
+    
+    fetchDataAndUpdateList();  
+    setTimeout(function(){materialtypelist.push(new_data);pmltd();},100);
+});
+</script>
+
+</body>
+      </html>
