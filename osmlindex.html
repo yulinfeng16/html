@@ -1,78 +1,79 @@
-​<!DOCTYPE html​> 
- ​<​html​ ​lang​="​en​"​> 
- ​<​head​> 
- ​    ​<​meta​ ​charset​="​UTF-8​"​> 
- ​    ​<​meta​ ​name​="​viewport​" ​content​="​width=device-width, initial-scale=1.0​"​> 
- ​    ​<​title​>​留学咨询服务​</​title​> 
- ​    ​<!-- 引入Bootstrap --> 
- ​    ​<​link​ ​href​="​https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css​" ​rel​="​stylesheet​"​> 
- ​    ​<​script​ ​src​="​https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js​"​>​</​script​> 
- ​    ​<​script​ ​src​="​https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.min.js​"​>​</​script​> 
- ​</​head​> 
- ​<​body​> 
- ​    ​<​div​ ​class​="​container​"​> 
- ​        ​<​header​ ​class​="​d-flex justify-content-center py-3​"​> 
- ​            ​<​h1​ ​class​="​text-primary​"​>​留学咨询服务​</​h1​> 
- ​        ​</​header​> 
-  
- ​        ​<​main​ ​role​="​main​" ​class​="​pb-3​"​> 
- ​            ​<​section​ ​id​="​services​"​> 
- ​                ​<​h2​ ​class​="​text-center mb-4​"​>​我们的服务​</​h2​> 
- ​                ​<​div​ ​class​="​row​"​> 
- ​                    ​<​div​ ​class​="​col-md-4​"​> 
- ​                        ​<​div​ ​class​="​card mb-4 shadow-sm​"​> 
- ​                            ​<​div​ ​class​="​card-body​"​> 
- ​                                ​<​h5​ ​class​="​card-title​"​>​留学申请指导​</​h5​> 
- ​                                ​<​p​ ​class​="​card-text​"​>​我们提供一对一的留学申请指导，帮助学生准备材料，提升申请成功率。​</​p​> 
- ​                            ​</​div​> 
- ​                        ​</​div​> 
- ​                    ​</​div​> 
- ​                    ​<​div​ ​class​="​col-md-4​"​> 
- ​                        ​<​div​ ​class​="​card mb-4 shadow-sm​"​> 
- ​                            ​<​div​ ​class​="​card-body​"​> 
- ​                                ​<​h5​ ​class​="​card-title​"​>​签证咨询​</​h5​> 
- ​                                ​<​p​ ​class​="​card-text​"​>​专业的签证咨询团队为您提供详细的签证办理流程和技巧。​</​p​> 
- ​                            ​</​div​> 
- ​                        ​</​div​> 
- ​                    ​</​div​> 
- ​                    ​<​div​ ​class​="​col-md-4​"​> 
- ​                        ​<​div​ ​class​="​card mb-4 shadow-sm​"​> 
- ​                            ​<​div​ ​class​="​card-body​"​> 
- ​                                ​<​h5​ ​class​="​card-title​"​>​语言培训​</​h5​> 
- ​                                ​<​p​ ​class​="​card-text​"​>​提供英语、法语等多种语言的培训课程，帮助您顺利通过考试。​</​p​> 
- ​                            ​</​div​> 
- ​                        ​</​div​> 
- ​                    ​</​div​> 
- ​                ​</​div​> 
- ​            ​</​section​> 
-  
- ​            {% comment %} ​<​section​ ​id​="​contact-us​"​> 
- ​                ​<​h2​ ​class​="​text-center mb-4​"​>​联系我们​</​h2​> 
- ​                ​<​form​ ​action​="​{% url 'contact_form' %}​" ​method​="​post​"​> 
- ​                    {% csrf_token %} 
- ​                    ​<​div​ ​class​="​mb-3​"​> 
- ​                        ​<​label​ ​for​="​name​" ​class​="​form-label​"​>​姓名​</​label​> 
- ​                        ​<​input​ ​type​="​text​" ​class​="​form-control​" ​id​="​name​" ​placeholder​="​您的姓名​" ​required​> 
- ​                    ​</​div​> 
- ​                    ​<​div​ ​class​="​mb-3​"​> 
- ​                        ​<​label​ ​for​="​email​" ​class​="​form-label​"​>​邮箱​</​label​> 
- ​                        ​<​input​ ​type​="​email​" ​class​="​form-control​" ​id​="​email​" ​placeholder​="​您的电子邮箱​" ​required​> 
- ​                    ​</​div​> 
- ​                    ​<​div​ ​class​="​mb-3​"​> 
- ​                        ​<​label​ ​for​="​message​" ​class​="​form-label​"​>​消息​</​label​> 
- ​                        ​<​textarea​ ​class​="​form-control​" ​id​="​message​" ​rows​="​3​" ​required​>​</​textarea​> 
- ​                    ​</​div​> 
- ​                    ​<​button​ ​type​="​submit​" ​class​="​btn btn-primary​"​>​提交​</​button​> 
- ​                ​</​form​> 
- ​            ​</​section​>​ {% endcomment %} 
- ​        ​</​main​> 
-  
- ​        ​<​footer​ ​class​="​my-5 pt-5 text-muted text-center text-small​"​> 
- ​            ​<​p​ ​class​="​mb-1​"​>​&copy; 2024 留学咨询服务公司. All rights reserved.​</​p​> 
- ​        ​</​footer​> 
- ​    ​</​div​> 
-  
- ​    ​<!-- 引入Bootstrap JS --> 
- ​    ​<​script​ ​src​="​https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js​"​>​</​script​> 
- ​</​body​> 
- ​</​html​>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>留学咨询服务</title>
+    <!-- 引入Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header class="d-flex justify-content-center py-3">
+            <h1 class="text-primary">留学咨询服务</h1>
+        </header>
+
+        <main role="main" class="pb-3">
+            <section id="services">
+                <h2 class="text-center mb-4">我们的服务</h2>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="card mb-4 shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title">留学申请指导</h5>
+                                <p class="card-text">我们提供一对一的留学申请指导，帮助学生准备材料，提升申请成功率。</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card mb-4 shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title">签证咨询</h5>
+                                <p class="card-text">专业的签证咨询团队为您提供详细的签证办理流程和技巧。</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card mb-4 shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title">语言培训</h5>
+                                <p class="card-text">提供英语、法语等多种语言的培训课程，帮助您顺利通过考试。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {% comment %} <section id="contact-us">
+                <h2 class="text-center mb-4">联系我们</h2>
+                <form action="{% url 'contact_form' %}" method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="name" class="form-label">姓名</label>
+                        <input type="text" class="form-control" id="name" placeholder="您的姓名" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">邮箱</label>
+                        <input type="email" class="form-control" id="email" placeholder="您的电子邮箱" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="message" class="form-label">消息</label>
+                        <textarea class="form-control" id="message" rows="3" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">提交</button>
+                </form>
+            </section> {% endcomment %}
+        </main>
+
+        <footer class="my-5 pt-5 text-muted text-center text-small">
+            <p class="mb-1">&copy; 2024 留学咨询服务公司. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <!-- 引入Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
