@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>新年雕金花烟花</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+
+        canvas {
+            border: 2px solid #ffd700;
+            box-shadow: 0 0 20px #ffd700;
+            background-color: #111;
+        }
+
+        .controls {
+            margin-top: 20px;
+            color: #ffd700;
+            font-family: 'Arial', sans-serif;
+            text-align: center;
+        }
+
+        button {
+            background-color: #ffd700;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 5px;
+        }
+
+        button:hover {
+            background-color: #ffa500;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="goldFlowerCanvas" width="800" height="600"></canvas>
+    <div class="controls">
+        <p>新年雕金花</p>
+        <button onclick="clearCanvas()">清除画布</button>
+        <button onclick="changeColor('rgba(255, 215, 0, 0.3)')">金色</button>
+        <button onclick="changeColor('rgba(255, 0, 0, 0.3)')">红色</button>
+        <button onclick="changeColor('rgba(0, 255, 126, 0.3)')">绿色</button>
+        <button onclick="launchFirework()">发射烟花</button>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('goldFlowerCanvas');
+        const ctx = canvas.getContext('2d');
+        let isDrawing = false;
+        let currentColor = 'rgba(255, 215, 0, 0.3)'; // 默认金色云雾效果
+        const symmetry = 6; // 对称数量，可以调整
+        let drawnPoints = []; // 存储用户绘制的点
+
+        // 烟花粒子类
+        class Particle {
+            constructor(x, y, color) {
+                this.x = x;
+                this.y = y;
+                this.color = color;
+                this.velocity = {
+                    x: (Math.random() - 0.5) * 10,
+                    y: (Math.random() - 0.5) * 10
+                };
+                this.alpha = 1; // 透明度
+                this.size = Math.random() * 3 + 1;
+            }
+
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.alpha;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+                ctx.restore();
+            }
+
+            update() {
+                this.x += this.velocity.x;
+                this.y += this.velocity.y;
+                this.alpha -= 0.01; // 逐渐消失
+                this.size -= 0.05; // 逐渐变小
+            }
+        }
+
+        let particles = []; // 存储烟花粒子
+
+        // 绘制功能
+        canvas.addEventListener('mousedown', (event) => {
+            isDrawing = true;
+            draw(event.offsetX, event.offsetY);
+        });
+
+        canvas.addEventListener('mousemove', (event) => {
+            if (isDrawing) {
+                draw(event.offsetX, event.offsetY);
+            }
+        });
+
+        canvas.addEventListener('mouseup', () => {
+            isDrawing = false;
+        });
+
+        canvas.addEventListener('mouseleave', () => {
+            isDrawing = false;
+        });
+
+        function draw(x, y) {
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const radius = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
+            const angle = Math.atan2(y - centerY, x - centerX);
+
+            for (let i = 0; i < symmetry; i++) {
+                const newAngle = angle + (i * (2 * Math.PI) / symmetry);
+                const newX = centerX + radius * Math.cos(newAngle);
+                const newY = centerY + radius * Math.sin(newAngle);
+
+                // 云雾效果：随机化笔触大小和透明度
+                ctx.beginPath();
+                ctx.arc(newX, newY, Math.random() * 10 + 5, 0, Math.PI * 2);
+                ctx.fillStyle = currentColor;
+                ctx.fill();
+
+                // 存储绘制的点
+                drawnPoints.push({ x: newX, y: newY, color: currentColor });
+            }
+        }
+
+        // 清除画布
+        function clearCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawnPoints = []; // 清空存储的点
+        }
+
+        // 切换颜色
+        function changeColor(color) {
+            currentColor = color;
+        }
+
+        // 发射烟花
+        function launchFirework() {
+            if (drawnPoints.length === 0) return; // 如果没有绘制内容，则不发射
+
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+
+            // 清空画布并绘制夜空
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // 创建烟花粒子
+            particles = [];
+            drawnPoints.forEach(point => {
+                for (let i = 0; i < 10; i++) {
+                    particles.push(new Particle(point.x, point.y, point.color));
+                }
+            });
+
+            // 烟花动画
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = '#000';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                particles.forEach((particle, index) => {
+                    if (particle.alpha > 0) {
+                        particle.draw();
+                        particle.update();
+                    } else {
+                        particles.splice(index, 1); // 移除消失的粒子
+                    }
+                });
+
+                if (particles.length > 0) {
+                    requestAnimationFrame(animate);
+                } else {
+                    // 动画结束后恢复绘制状态
+                    drawnPoints.forEach(point => {
+                        ctx.beginPath();
+                        ctx.arc(point.x, point.y, Math.random() * 10 + 5, 0, Math.PI * 2);
+                        ctx.fillStyle = point.color;
+                        ctx.fill();
+                    });
+                }
+            }
+
+            animate();
+        }
+    </script>
+</body>
+</html>
