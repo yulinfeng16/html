@@ -122,14 +122,22 @@
             }
 
             .decorations {
-                width: 100px; /* 减小装饰图片大小 */
-                height: 100px;
-            }
+            position: absolute;
+            top: -50px;
+            left: -50px;
+            width: 200px;
+            height: 200px;
+            background-image: url('https://tse1-mm.cn.bing.net/th/id/OIP-C.IeED5nctVrsUvj3IZ8UeOAHaHa?rs=1&pid=ImgDetMain'); /* 灯笼装饰 */
+            background-size: cover;
+            opacity: 0.6;
+            pointer-events: none;
+        }
 
-            .decorations.right {
-                width: 100px;
-                height: 100px;
-            }
+        .decorations.right {
+            left: auto;
+            right: -50px;
+            background-image: url('https://gss0.baidu.com/-fo3dSag_xI4khGko9WTAnF6hhy/zhidao/wh%3D600%2C800/sign=7524fbb9c8ea15ce41bbe80f863016cb/a08b87d6277f9e2f711788341e30e924b899f3e8.jpg'); /* 鞭炮装饰 */
+        }
         }
     </style>
 </head>
