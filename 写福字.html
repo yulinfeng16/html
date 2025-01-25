@@ -247,8 +247,8 @@
                 }
             }
 
-            // 假设标准“福”字的像素数量为 50000（可以根据实际情况调整）
-            const standardPixels = 50000;
+            
+            const standardPixels = 10000;
 
             // 计算像素数量的相似度
             const pixelSimilarity = 1 - Math.abs(drawnPixels - standardPixels) / standardPixels;
@@ -258,10 +258,10 @@
             const smoothnessScore = Math.random() * 0.3 + 0.7; // 提高笔画平滑度评分
 
             // 综合评分（提高整体评分）
-            const totalScore = (pixelSimilarity * 0.3 + structureScore * 0.4 + smoothnessScore * 0.3) * 100;
+            const totalScore = (pixelSimilarity * 0.3 + structureScore * 0.4 + smoothnessScore * 0.3+4) *200;
 
             // 确保评分在 70% 到 100% 之间
-            return Math.round(Math.max(70, Math.min(100, totalScore)));
+            return Math.round(Math.max(50, Math.min(100, totalScore)));
         }
     </script>
 </body>
