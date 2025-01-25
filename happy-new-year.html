@@ -79,8 +79,8 @@
         </div>
 
         <!-- 选项卡内容 -->
-        <div class="tab-content" id="tab1">
-            <iframe src="https://yulinfeng16.github.io/html/%E9%9B%95%E9%87%91%E8%8A%B1.html"></iframe>
+        <div class="tab-content" id="tab1" onload="adjustIframe();">
+            <iframe id='sss' src="https://yulinfeng16.github.io/html/%E9%9B%95%E9%87%91%E8%8A%B1.html"></iframe>
         </div>
         <div class="tab-content active" id="tab2">
             <iframe src="https://yulinfeng16.github.io/html/%E5%86%99%E7%A6%8F%E5%AD%97.html"></iframe>
@@ -104,7 +104,11 @@
                 document.getElementById(targetTab).classList.add('active');
             });
         });
-
+function adjustIframe(){
+        var ifm= document.getElementById("sss");
+        ifm.height=document.documentElement.clientHeight;
+        ifm.width=document.documentElement.clientWidth;
+                                    }
         // 动态调整 iframe 高度
         function adjustIframeHeight() {
             const tabContainer = document.querySelector('.tab-container');
