@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>写福字</title>
     <style>
         body {
@@ -105,12 +105,13 @@
             <button id="clearButton">清除</button>
             <button id="submitButton">提交评分</button>
             <button id="saveButton">保存福字</button>
-            <button id="shareButton">分享福字</button> <!-- 新增分享按钮 -->
+            <button id="shareButton">分享福字</button>
         </div>
         <div id="scoreDisplay"></div>
         <div class="decorations"></div>
         <div class="decorations right"></div>
-        <div style="text-align:center;position:fixed;bottom:20px;"><font color="white">本页面由DeepSeek模型助力编写。祝您和家人阖家幸福，欢度新年！</font></div> <div style="text-align:center;position:fixed;bottom:0px;"><font color="blue"><a href="https://yulinfeng16.github.io/html/%E5%86%99%E7%A6%8F%E5%AD%97_legacy.html">前往旧版写福字页面</a></div>
+        <div style="text-align:center;position:fixed;bottom:20px;"><font color="white">本页面由DeepSeek模型助力编写。祝您和家人阖家幸福，欢度新年！</font></div>
+        <div style="text-align:center;position:fixed;bottom:0px;"><font color="blue"><a href="https://yulinfeng16.github.io/html/%E5%86%99%E7%A6%8F%E5%AD%97_legacy.html">前往旧版写福字页面</a></div>
     </div>
 
     <script>
@@ -119,7 +120,7 @@
         const clearButton = document.getElementById('clearButton');
         const submitButton = document.getElementById('submitButton');
         const saveButton = document.getElementById('saveButton');
-        const shareButton = document.getElementById('shareButton'); // 获取分享按钮
+        const shareButton = document.getElementById('shareButton');
         const scoreDisplay = document.getElementById('scoreDisplay');
 
         let isDrawing = false;
@@ -136,28 +137,59 @@
             ctx.lineWidth = 10 * pressure; // 动态调整笔触粗细
         }
 
+        // 获取画布上的坐标
+        function getCanvasCoordinates(event) {
+            const rect = canvas.getBoundingClientRect();
+            if (event.touches) {
+                // 触摸事件
+                return {
+                    x: event.touches[0].clientX - rect.left,
+                    y: event.touches[0].clientY - rect.top
+                };
+            } else {
+                // 鼠标事件
+                return {
+                    x: event.offsetX,
+                    y: event.offsetY
+                };
+            }
+        }
+
         // 开始绘制
-        canvas.addEventListener('mousedown', (e) => {
+        function startDrawing(event) {
             isDrawing = true;
-            setBrushSize(e.offsetX, e.offsetY);
+            const { x, y } = getCanvasCoordinates(event);
+            setBrushSize(x, y);
             ctx.beginPath();
-            ctx.moveTo(e.offsetX, e.offsetY);
-        });
+            ctx.moveTo(x, y);
+            event.preventDefault(); // 阻止默认行为（如页面滚动）
+        }
 
         // 绘制中
-        canvas.addEventListener('mousemove', (e) => {
+        function draw(event) {
             if (isDrawing) {
-                setBrushSize(e.offsetX, e.offsetY);
-                ctx.lineTo(e.offsetX, e.offsetY);
+                const { x, y } = getCanvasCoordinates(event);
+                setBrushSize(x, y);
+                ctx.lineTo(x, y);
                 ctx.stroke();
             }
-        });
+            event.preventDefault(); // 阻止默认行为
+        }
 
         // 结束绘制
-        canvas.addEventListener('mouseup', () => {
+        function endDrawing() {
             isDrawing = false;
             ctx.closePath();
-        });
+        }
+
+        // 绑定事件
+        canvas.addEventListener('mousedown', startDrawing);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mouseup', endDrawing);
+
+        canvas.addEventListener('touchstart', startDrawing);
+        canvas.addEventListener('touchmove', draw);
+        canvas.addEventListener('touchend', endDrawing);
 
         // 清除画布
         clearButton.addEventListener('click', () => {
