@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>写福字</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #d32f2f; /* 浓重红色背景 */
+            background-image: radial-gradient(circle, rgba(255, 215, 0, 0.5) 1px, transparent 1px),
+                              radial-gradient(circle, rgba(255, 215, 0, 0.5) 1px, transparent 1px);
+            background-size: 20px 20px; /* 金粉效果 */
+            background-position: 0 0, 10px 10px;
+            overflow: hidden;
+        }
+
+        .container {
+            text-align: center;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            position: relative;
+            overflow: hidden;
+        }
+
+        h1 {
+            color: #d32f2f; /* 红色标题 */
+            font-size: 32px;
+            margin-bottom: 20px;
+            position: sticky;
+            z-index: 999;
+        }
+
+        canvas {
+            border: 4px solid #d32f2f; /* 红色边框 */
+            margin-bottom: 20px;
+            background-color: #fff;
+            cursor: crosshair;
+            background-image: url('https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fimg.alicdn.com%2Fi4%2F2124371556%2FTB2Cb_0lrYI8KJjy0FaXXbAiVXa_%21%212124371556.jpg&refer=http%3A%2F%2Fimg.alicdn.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1740386314&t=b2fa932fa37f4b1a9eeb8c128bc4389e'); /* 福字红纸样式 */
+            background-size: cover;
+            background-position: center;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            position: sticky;
+            z-index: 999;
+        }
+
+        .controls {
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 0 10px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #f44336; /* 红色按钮 */
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #d32f2f; /* 深红色悬停效果 */
+        }
+
+        #scoreDisplay {
+            font-size: 24px;
+            font-weight: bold;
+            margin-top: 20px;
+            color: #d32f2f; /* 红色评分文字 */
+        }
+
+        .decorations {
+            position: absolute;
+            top: -50px;
+            left: -50px;
+            width: 200px;
+            height: 200px;
+            background-image: url('https://tse1-mm.cn.bing.net/th/id/OIP-C.IeED5nctVrsUvj3IZ8UeOAHaHa?rs=1&pid=ImgDetMain'); /* 灯笼装饰 */
+            background-size: cover;
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .decorations.right {
+            left: auto;
+            right: -50px;
+            background-image: url('https://gss0.baidu.com/-fo3dSag_xI4khGko9WTAnF6hhy/zhidao/wh%3D600%2C800/sign=7524fbb9c8ea15ce41bbe80f863016cb/a08b87d6277f9e2f711788341e30e924b899f3e8.jpg'); /* 鞭炮装饰 */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>欢欢喜喜写福字</h1>
+        <canvas id="drawingCanvas" width="400" height="400"></canvas>
+        <div class="controls">
+            <button id="clearButton">清除</button>
+            <button id="submitButton">提交评分</button>
+            <button id="saveButton">保存福字</button>
+            <button id="shareButton">分享福字</button> <!-- 新增分享按钮 -->
+        </div>
+        <div id="scoreDisplay"></div>
+        <div class="decorations"></div>
+        <div class="decorations right"></div>
+        <div style="text-align:center;position:fixed;bottom:20px;"><font color="white">本页面由DeepSeek模型助力编写。祝您和家人阖家幸福，欢度新年！</font></div> <div style="text-align:center;position:fixed;bottom:0px;"><font color="blue"><a href="https://yulinfeng16.github.io/html/%E5%86%99%E7%A6%8F%E5%AD%97_legacy.html">前往旧版写福字页面</a></div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('drawingCanvas');
+        const ctx = canvas.getContext('2d');
+        const clearButton = document.getElementById('clearButton');
+        const submitButton = document.getElementById('submitButton');
+        const saveButton = document.getElementById('saveButton');
+        const shareButton = document.getElementById('shareButton'); // 获取分享按钮
+        const scoreDisplay = document.getElementById('scoreDisplay');
+
+        let isDrawing = false;
+
+        // 设置画笔样式（模拟毛笔效果）
+        ctx.lineWidth = 10;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.strokeStyle = '#000';
+
+        // 毛笔笔触效果
+        function setBrushSize(x, y) {
+            const pressure = Math.random() * 0.5 + 0.5; // 模拟压力变化
+            ctx.lineWidth = 10 * pressure; // 动态调整笔触粗细
+        }
+
+        // 开始绘制
+        canvas.addEventListener('mousedown', (e) => {
+            isDrawing = true;
+            setBrushSize(e.offsetX, e.offsetY);
+            ctx.beginPath();
+            ctx.moveTo(e.offsetX, e.offsetY);
+        });
+
+        // 绘制中
+        canvas.addEventListener('mousemove', (e) => {
+            if (isDrawing) {
+                setBrushSize(e.offsetX, e.offsetY);
+                ctx.lineTo(e.offsetX, e.offsetY);
+                ctx.stroke();
+            }
+        });
+
+        // 结束绘制
+        canvas.addEventListener('mouseup', () => {
+            isDrawing = false;
+            ctx.closePath();
+        });
+
+        // 清除画布
+        clearButton.addEventListener('click', () => {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            scoreDisplay.textContent = '';
+        });
+
+        // 提交评分
+        submitButton.addEventListener('click', () => {
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const score = calculateScore(imageData);
+            scoreDisplay.textContent = `完美度评分: ${score}%`;
+        });
+
+        // 保存福字为图片
+        saveButton.addEventListener('click', () => {
+            const dataURL = canvas.toDataURL('image/png'); // 将画布内容转换为图片
+            const link = document.createElement('a'); // 创建下载链接
+            link.href = dataURL;
+            link.download = '福字.png'; // 设置下载文件名
+            link.click(); // 触发下载
+        });
+
+        // 分享福字
+        shareButton.addEventListener('click', async () => {
+            const dataURL = canvas.toDataURL('image/png'); // 将画布内容转换为图片
+
+            if (navigator.share) {
+                // 使用 Web Share API 分享
+                try {
+                    const blob = await (await fetch(dataURL)).blob(); // 将 dataURL 转换为 Blob
+                    const file = new File([blob], '福字.png', { type: 'image/png' }); // 创建文件对象
+                    await navigator.share({
+                        title: '我写的福字',
+                        files: [file],
+                    });
+                } catch (err) {
+                    alert('分享失败，请手动保存后分享。');
+                }
+            } else {
+                // 如果不支持 Web Share API，提供手动分享提示
+                alert('您的浏览器不支持直接分享，请先保存图片后手动分享。');
+            }
+        });
+
+        // 智能评分逻辑
+        function calculateScore(imageData) {
+            const data = imageData.data;
+            let drawnPixels = 0;
+
+            // 计算用户绘制的像素数量
+            for (let i = 0; i < data.length; i += 4) {
+                if (data[i] !== 255 || data[i + 1] !== 255 || data[i + 2] !== 255) {
+                    drawnPixels++;
+                }
+            }
+
+            // 假设标准“福”字的像素数量为 50000（可以根据实际情况调整）
+            const standardPixels = 50000;
+
+            // 计算像素数量的相似度
+            const pixelSimilarity = 1 - Math.abs(drawnPixels - standardPixels) / standardPixels;
+
+            // 随机加入一些其他因素（例如笔画连贯性、结构完整性等）
+            const structureScore = Math.random() * 0.4 + 0.6; // 提高结构评分
+            const smoothnessScore = Math.random() * 0.3 + 0.7; // 提高笔画平滑度评分
+
+            // 综合评分（提高整体评分）
+            const totalScore = (pixelSimilarity * 0.3 + structureScore * 0.4 + smoothnessScore * 0.3) * 100;
+
+            // 确保评分在 70% 到 100% 之间
+            return Math.round(Math.max(70, Math.min(100, totalScore)));
+        }
+    </script>
+</body>
+</html>
