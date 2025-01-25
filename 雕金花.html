@@ -20,6 +20,7 @@
             border: 2px solid #ffd700;
             box-shadow: 0 0 20px #ffd700;
             background-color: #111;
+            touch-action: none; /* 防止触摸时页面滚动 */
         }
 
         .controls {
@@ -97,25 +98,57 @@
 
         let particles = []; // 存储烟花粒子
 
-        // 绘制功能
-        canvas.addEventListener('mousedown', (event) => {
-            isDrawing = true;
-            draw(event.offsetX, event.offsetY);
-        });
+        // 获取画布上的坐标
+        function getCanvasCoordinates(event) {
+            const rect = canvas.getBoundingClientRect();
+            let x, y;
 
-        canvas.addEventListener('mousemove', (event) => {
-            if (isDrawing) {
-                draw(event.offsetX, event.offsetY);
+            if (event.touches) {
+                // 触摸事件
+                x = event.touches[0].clientX - rect.left;
+                y = event.touches[0].clientY - rect.top;
+            } else {
+                // 鼠标事件
+                x = event.offsetX;
+                y = event.offsetY;
             }
-        });
 
-        canvas.addEventListener('mouseup', () => {
-            isDrawing = false;
-        });
+            return { x, y };
+        }
 
-        canvas.addEventListener('mouseleave', () => {
+        // 绘制功能
+        function startDrawing(event) {
+            isDrawing = true;
+            const { x, y } = getCanvasCoordinates(event);
+            draw(x, y);
+        }
+
+        function continueDrawing(event) {
+            if (isDrawing) {
+                const { x, y } = getCanvasCoordinates(event);
+                draw(x, y);
+            }
+        }
+
+        function stopDrawing() {
             isDrawing = false;
+        }
+
+        // 绑定事件
+        canvas.addEventListener('mousedown', startDrawing);
+        canvas.addEventListener('mousemove', continueDrawing);
+        canvas.addEventListener('mouseup', stopDrawing);
+        canvas.addEventListener('mouseleave', stopDrawing);
+
+        canvas.addEventListener('touchstart', (event) => {
+            event.preventDefault(); // 防止页面滚动
+            startDrawing(event);
         });
+        canvas.addEventListener('touchmove', (event) => {
+            event.preventDefault(); // 防止页面滚动
+            continueDrawing(event);
+        });
+        canvas.addEventListener('touchend', stopDrawing);
 
         function draw(x, y) {
             const centerX = canvas.width / 2;
