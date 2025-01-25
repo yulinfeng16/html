@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"> <!-- 禁止缩放 -->
     <title>写福字</title>
     <style>
         body {
@@ -28,6 +28,8 @@
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
             position: relative;
             overflow: hidden;
+            width: 90%; /* 容器宽度 */
+            max-width: 500px; /* 最大宽度 */
         }
 
         h1 {
@@ -49,6 +51,9 @@
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
             position: sticky;
             z-index: 999;
+            width: 100%; /* 画布宽度 */
+            height: auto; /* 高度自适应 */
+            aspect-ratio: 1 / 1; /* 保持正方形 */
         }
 
         .controls {
@@ -95,6 +100,37 @@
             right: -50px;
             background-image: url('https://gss0.baidu.com/-fo3dSag_xI4khGko9WTAnF6hhy/zhidao/wh%3D600%2C800/sign=7524fbb9c8ea15ce41bbe80f863016cb/a08b87d6277f9e2f711788341e30e924b899f3e8.jpg'); /* 鞭炮装饰 */
         }
+
+        /* 手机端样式 */
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 24px; /* 减小标题字体大小 */
+            }
+
+            canvas {
+                width: 100%; /* 画布宽度 */
+                height: auto; /* 高度自适应 */
+            }
+
+            button {
+                padding: 8px 16px; /* 减小按钮大小 */
+                font-size: 14px;
+            }
+
+            #scoreDisplay {
+                font-size: 20px; /* 减小评分字体大小 */
+            }
+
+            .decorations {
+                width: 100px; /* 减小装饰图片大小 */
+                height: 100px;
+            }
+
+            .decorations.right {
+                width: 100px;
+                height: 100px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -140,17 +176,20 @@
         // 获取画布上的坐标
         function getCanvasCoordinates(event) {
             const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;  // 画布实际宽度与显示宽度的比例
+            const scaleY = canvas.height / rect.height; // 画布实际高度与显示高度的比例
+
             if (event.touches) {
                 // 触摸事件
                 return {
-                    x: event.touches[0].clientX - rect.left,
-                    y: event.touches[0].clientY - rect.top
+                    x: (event.touches[0].clientX - rect.left) * scaleX,
+                    y: (event.touches[0].clientY - rect.top) * scaleY
                 };
             } else {
                 // 鼠标事件
                 return {
-                    x: event.offsetX,
-                    y: event.offsetY
+                    x: (event.offsetX || event.clientX - rect.left) * scaleX,
+                    y: (event.offsetY || event.clientY - rect.top) * scaleY
                 };
             }
         }
@@ -247,7 +286,6 @@
                 }
             }
 
-            
             const standardPixels = 10000;
 
             // 计算像素数量的相似度
