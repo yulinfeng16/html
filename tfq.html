@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>福气消消乐</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-image: url('https://img0.baidu.com/it/u=1031870657,2009425854&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=667'); /* 随机背景图 */
+            background-size: cover;
+        }
+
+        .container {
+            background: rgba(255, 0, 0, 0.2);
+            backdrop-filter: blur(10px); /* 毛玻璃效果 */
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .game-board {
+            display: grid;
+            grid-template-columns: repeat(5, 60px);
+            grid-template-rows: repeat(5, 60px);
+            gap: 5px;
+            margin: 20px auto;
+        }
+
+        .cell {
+            width: 60px;
+            height: 60px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border: 1px solid #ccc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            cursor: pointer;
+            user-select: none;
+            transition: transform 0.2s ease, background-color 0.2s ease;
+            border-radius: 8px;
+        }
+
+        .cell.selected {
+            background-color: #FF0000; /* 选中时的背景色 */
+            transform: scale(1.1); /* 选中时的放大效果 */
+        }
+
+        .cell.winning {
+            border: 3px solid #ff0000; /* 胜利时的边框 */
+            animation: pulse 1s infinite; /* 胜利时的闪烁动画 */
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .message {
+            margin-top: 20px;
+            font-size: 10px;
+            color: #ffffff;
+        }
+
+        .reset-button, .hint-button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: rgba(255, 255, 255, 0.8);
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            transition: background-color 0.2s ease;
+        }
+
+        .reset-button:hover, .hint-button:hover {
+            background-color: rgba(255, 255, 255, 1);
+        }
+
+        .hint-button {
+            margin-left: 10px;
+        }
+
+        .tooltip {
+            position: absolute;
+            background-color: rgba(51, 51, 51, 0.9);
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .tooltip.show {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+	.tt{
+	color:yellow;
+}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="tt">福气消消乐</h1>
+	<h3 class="tt">凑出“添福气”就胜利啦！</h3>
+        <div id="game-board" class="game-board"></div>
+        <div id="message" class="message"></div>
+        <button id="reset-button" class="reset-button">重新开始</button>
+        <button id="hint-button" class="hint-button">提示</button>
+        <div id="tooltip" class="tooltip"></div>
+    </div>
+    <script>
+        const gameBoard = document.getElementById('game-board');
+        const message = document.getElementById('message');
+        const resetButton = document.getElementById('reset-button');
+        const hintButton = document.getElementById('hint-button');
+        const tooltip = document.getElementById('tooltip');
+
+        // 定义字样库
+        const symbols = ['添', '福', '气', '喜', '乐'];
+        const boardSize = 5;
+        let board = [];
+        let selected = null;
+// 检查是否胜利(no output)
+        function checkForWin_n() {
+            for (let i = 0; i < boardSize; i++) {
+                for (let j = 0; j < boardSize - 2; j++) {
+                    // 检查水平方向
+                    if (board[i][j] === '添' && board[i][j + 1] === '福' && board[i][j + 2] === '气') {
+                        return true;
+                    }
+                    // 检查垂直方向
+                    if (board[j][i] === '添' && board[j + 1][i] === '福' && board[j + 2][i] === '气') {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+        // 初始化游戏
+        function createBoard() {
+            board = [];
+            gameBoard.innerHTML = '';
+            for (let i = 0; i < boardSize; i++) {
+                board[i] = [];
+                for (let j = 0; j < boardSize; j++) {
+                    const cell = document.createElement('div');
+                    cell.classList.add('cell');
+                    const symbol = getRandomSymbol();
+                    cell.textContent = symbol;
+                    cell.dataset.row = i;
+                    cell.dataset.col = j;
+                    cell.addEventListener('click', () => selectCell(cell));
+                    gameBoard.appendChild(cell);
+                    board[i][j] = symbol;
+                }
+            }
+	if(checkForWin_n())createBoard();
+        }
+
+        // 获取随机字样
+        function getRandomSymbol() {
+            return symbols[Math.floor(Math.random() * symbols.length)];
+        }
+
+        // 检查是否存在可消除的元素
+        function hasValidMove() {
+            for (let i = 0; i < boardSize; i++) {
+                for (let j = 0; j < boardSize; j++) {
+                    // 检查右侧相邻元素
+                    if (j < boardSize - 1 && board[i][j] === board[i][j + 1]) {
+                        return true;
+                    }
+                    // 检查下方相邻元素
+                    if (i < boardSize - 1 && board[i][j] === board[i + 1][j]) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        // 选择单元格
+        function selectCell(cell) {
+            if (selected === cell) {
+                cell.classList.remove('selected');
+                selected = null;
+            } else if (selected) {
+                const row1 = parseInt(selected.dataset.row);
+                const col1 = parseInt(selected.dataset.col);
+                const row2 = parseInt(cell.dataset.row);
+                const col2 = parseInt(cell.dataset.col);
+
+                // 检查是否相邻
+                if ((Math.abs(row1 - row2) === 1 && col1 === col2) || (Math.abs(col1 - col2) === 1 && row1 === row2)) {
+                    // 检查是否两个字相同
+                    if (board[row1][col1] === board[row2][col2]) {
+                        mergeCells(selected, cell);
+                        checkForWin();
+                    } else {
+                        message.textContent = '只能消除相同的两个字！';
+                    }
+                }
+
+                selected.classList.remove('selected');
+                selected = null;
+            } else {
+                cell.classList.add('selected');
+                selected = cell;
+            }
+        }
+
+        // 合并两个单元格
+        function mergeCells(cell1, cell2) {
+            const row1 = parseInt(cell1.dataset.row);
+            const col1 = parseInt(cell1.dataset.col);
+            const row2 = parseInt(cell2.dataset.row);
+            const col2 = parseInt(cell2.dataset.col);
+
+            // 合并逻辑：将两个字样合并为一个新字样
+            const newSymbol = getRandomSymbol();
+            board[row1][col1] = newSymbol;
+            board[row2][col2] = getRandomSymbol(); // 用随机字样填充空缺
+
+            // 更新界面
+            cell1.textContent = newSymbol;
+            cell2.textContent = board[row2][col2];
+
+            // 让当前列上方的元素下落
+            dropCells(col1);
+            dropCells(col2);
+
+            // 检查是否需要替换
+            if (!hasValidMove()) {
+                replaceHalfCells();
+            }
+        }
+
+        // 让当前列上方的元素下落
+        function dropCells(col) {
+            for (let i = boardSize - 1; i >= 0; i--) {
+                if (board[i][col] === '') {
+                    for (let j = i - 1; j >= 0; j--) {
+                        if (board[j][col] !== '') {
+                            board[i][col] = board[j][col];
+                            board[j][col] = '';
+                            const cell = document.querySelector(`.cell[data-row='${i}'][data-col='${col}']`);
+                            const cellAbove = document.querySelector(`.cell[data-row='${j}'][data-col='${col}']`);
+                            cell.textContent = board[i][col];
+                            cellAbove.textContent = '';
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        // 替换一半的字
+        function replaceHalfCells() {
+            const cellsToReplace = Math.floor((boardSize * boardSize) / 2);
+            let replacedCount = 0;
+
+            const interval = setInterval(() => {
+                if (replacedCount >= cellsToReplace) {
+                    clearInterval(interval);
+                    return;
+                }
+
+                const row = Math.floor(Math.random() * boardSize);
+                const col = Math.floor(Math.random() * boardSize);
+                const cell = document.querySelector(`.cell[data-row='${row}'][data-col='${col}']`);
+
+                if (cell.textContent !== '') {
+                    const newSymbol = getRandomSymbol();
+                    board[row][col] = newSymbol;
+                    cell.textContent = newSymbol;
+                    cell.style.animation = 'fadeIn 0.5s ease';
+                    setTimeout(() => cell.style.animation = '', 500);
+                    replacedCount++;
+                }
+            }, 200);
+
+            message.textContent = '没有可消除的元素，已随机替换一半的字！';
+        }
+
+        // 检查是否胜利
+        function checkForWin() {
+            for (let i = 0; i < boardSize; i++) {
+                for (let j = 0; j < boardSize - 2; j++) {
+                    // 检查水平方向
+                    if (board[i][j] === '添' && board[i][j + 1] === '福' && board[i][j + 2] === '气') {
+                        highlightWinningCells(i, j, 'horizontal');
+                        message.textContent = `恭喜你，胜利了！`;
+                        return true;
+                    }
+                    // 检查垂直方向
+                    if (board[j][i] === '添' && board[j + 1][i] === '福' && board[j + 2][i] === '气') {
+                        highlightWinningCells(j, i, 'vertical');
+                        message.textContent = `恭喜你，胜利了！`;
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+	
+
+        // 高亮胜利的单元格
+        function highlightWinningCells(startRow, startCol, direction) {
+            for (let i = 0; i < 3; i++) {
+                let cell;
+                if (direction === 'horizontal') {
+                    cell = document.querySelector(`.cell[data-row='${startRow}'][data-col='${startCol + i}']`);
+                } else {
+                    cell = document.querySelector(`.cell[data-row='${startRow + i}'][data-col='${startCol}']`);
+                }
+                cell.classList.add('winning');
+            }
+        }
+
+        // 提示功能
+        function showHint() {
+            for (let i = 0; i < boardSize; i++) {
+                for (let j = 0; j < boardSize; j++) {
+                    // 检查右侧相邻元素
+                    if (j < boardSize - 1 && board[i][j] === board[i][j + 1]) {
+                        tooltip.textContent = `可以消除第 ${i + 1} 行，第 ${j + 1} 列和第 ${j + 2} 列的元素。`;
+                        tooltip.classList.add('show');
+                        setTimeout(() => tooltip.classList.remove('show'), 2000);
+                        return;
+                    }
+                    // 检查下方相邻元素
+                    if (i < boardSize - 1 && board[i][j] === board[i + 1][j]) {
+                        tooltip.textContent = `可以消除第 ${j + 1} 列，第 ${i + 1} 行和第 ${i + 2} 行的元素。`;
+                        tooltip.classList.add('show');
+                        setTimeout(() => tooltip.classList.remove('show'), 2000);
+                        return;
+                    }
+                }
+            }
+            tooltip.textContent = '没有可消除的元素，已随机替换一半的字！';
+            tooltip.classList.add('show');
+            setTimeout(() => tooltip.classList.remove('show'), 2000);
+        }
+
+        // 重新开始游戏
+        resetButton.addEventListener('click', () => {
+            createBoard();
+            message.textContent = '';
+        });
+
+        // 提示按钮
+        hintButton.addEventListener('click', () => {
+            showHint();
+        });
+
+        // 初始化
+        createBoard();
+    </script>
+</body>
+</html>
