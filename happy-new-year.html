@@ -76,6 +76,7 @@
         <div class="tab-buttons">
             <div class="tab-button" data-tab="tab1">雕金花</div>
             <div class="tab-button active" data-tab="tab2">写福字</div>
+            <div class="tab-button" data-tab="tab3">消消乐</div>
         </div>
 
         <!-- 选项卡内容 -->
@@ -84,6 +85,9 @@
         </div>
         <div class="tab-content active" id="tab2">
             <iframe src="https://yulinfeng16.github.io/html/%E5%86%99%E7%A6%8F%E5%AD%97.html"></iframe>
+        </div>
+        <div class="tab-content" id="tab3">
+            <iframe src="https://yulinfeng16.github.io/html/tfq.html"></iframe>
         </div>
     </div>
 
@@ -104,11 +108,11 @@
                 document.getElementById(targetTab).classList.add('active');
             });
         });
-function adjustIframe(){
-        var ifm= document.getElementById("sss");
-        ifm.height=document.documentElement.clientHeight;
-        ifm.width=document.documentElement.clientWidth;
-                                    }
+        function adjustIframe(){
+            var ifm= document.getElementById("sss");
+            ifm.height=document.documentElement.clientHeight;
+            ifm.width=document.documentElement.clientWidth;
+        }
         // 动态调整 iframe 高度
         function adjustIframeHeight() {
             const tabContainer = document.querySelector('.tab-container');
