@@ -1,0 +1,203 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+<title>黑底表格公式编辑器</title>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<style>
+/* ========= 基础 ========= */
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;background:#000;color:#fff;font:14px/1.4 sans-serif}
+button{background:#222;color:#fff;border:1px solid #555;padding:6px 10px;cursor:pointer;font-size:13px}
+button:active{background:#444}
+textarea{width:100%;height:100%;background:#000;color:#0f0;border:0;resize:none;font:15px/1.6 monospace;padding:6px}
+
+/* ========= 布局 ========= */
+.wrapper{display:flex;flex-direction:column;height:100%}
+.top{flex:0 0 44px;background:#111;display:flex;align-items:center;justify-content:space-between;padding:0 8px;border-bottom:1px solid #444}
+.core{flex:1 1 0;display:flex;flex-direction:row;min-height:0}
+@media(max-width:600px){.core{flex-direction:column}}
+.pane{flex:1 1 0;display:flex;flex-direction:column;min-height:0}
+.pane-head{flex:0 0 32px;background:#111;border-bottom:1px solid #444;display:flex;align-items:center;padding:0 8px;font-size:13px}
+.pane-body{flex:1 1 0;padding:6px;overflow-y:auto;background:#000}
+#previewArea{line-height:1.8}
+
+/* ========= 键盘 ========= */
+.keyboard{flex:0 0 210px;background:#000;display:flex;flex-direction:column;border-top:1px solid #444}
+.kb-head{flex:0 0 36px;background:#111;display:flex}
+.kb-head .tab{cursor:pointer;padding:0 12px;height:100%;display:flex;align-items:center;border-right:1px solid #444;font-size:13px}
+.kb-head .tab.active{background:#000;color:#0f0}
+.kb-body{flex:1 1 0;padding:6px;overflow-y:auto}
+.key-grid{display:none;flex-wrap:wrap;gap:6px}
+.key-grid.active{display:flex}
+.key{flex:1 0 60px;max-width:70px;background:#111;border:1px solid #555;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 4px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.key:active{background:#333}
+.key .sym{font-size:18px;margin-bottom:2px}
+.key .latex{font-size:10px;color:#aaa}
+
+/* ========= 状态栏 ========= */
+.status{flex:0 0 24px;background:#000;border-top:1px solid #444;padding:0 8px;font-size:12px;display:flex;align-items:center;justify-content:space-between}
+</style>
+</head>
+<body>
+<div class="wrapper">
+  <!-- 顶部按钮 -->
+  <div class="top">
+    <span>
+      <button id="btnClear">清空</button>
+      <button id="btnCopy">复制</button>
+      <button id="btnSave">保存</button>
+    </span>
+    <span id="status">就绪</span>
+  </div>
+
+  <!-- 输入 / 预览 -->
+  <div class="core">
+    <div class="pane">
+      <div class="pane-head">多行公式输入（每行一条 LaTeX）</div>
+      <div class="pane-body"><textarea id="multiInput" placeholder="例：&#10;E=mc^2&#10;\\frac{a}{b}+\\frac{c}{d}" oninput="renderMulti()"></textarea></div>
+    </div>
+    <div class="pane">
+      <div class="pane-head">实时预览</div>
+      <div class="pane-body" id="previewArea"></div>
+    </div>
+  </div>
+
+  <!-- 键盘 -->
+  <div class="keyboard">
+    <div class="kb-head">
+      <div class="tab active" data-grid="basic">基础</div>
+      <div class="tab" data-grid="greek">希腊</div>
+      <div class="tab" data-grid="op">运算</div>
+      <div class="tab" data-grid="arr">箭头</div>
+      <div class="tab" data-grid="misc">其他</div>
+    </div>
+    <div class="kb-body" id="kbBody"></div>
+  </div>
+</div>
+
+<script>
+/* ========= MathJax 配置 ========= */
+window.MathJax = {
+  tex: { inlineMath: [['$', '$']], displayMath: [['$$', '$$']] },
+  options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre'] }
+};
+
+/* ========= 符号库（HTML 实体 + LaTeX） ========= */
+const map = {
+  basic: [
+    {s:'+',h:'+'}, {s:'-',h:'−'}, {s:'\\times',h:'×'}, {s:'\\div',h:'÷'}, {s:'=',h:'='},
+    {s:'\\neq',h:'≠'}, {s:'<',h:'<'}, {s:'>',h:'>'}, {s:'\\leq',h:'≤'}, {s:'\\geq',h:'≥'},
+    {s:'\\pm',h:'±'}, {s:'\\mp',h:'∓'}, {s:'\\cdot',h:'·'}, {s:'\\circ',h:'∘'}, {s:'\\infty',h:'∞'},
+    {s:'\\sqrt{}',h:'√'}, {s:'^{}',h:'x²'}, {s:'_{}',h:'x₂'}, {s:'\\frac{}{}','h':'½'},
+    {s:'\\sum_{}^{}','h':'∑'}, {s:'\\int_{}^{}','h':'∫'}, {s:'\\lim_{}','h':'lim'}, {s:'\\sin','h':'sin'}, {s:'\\cos','h':'cos'}, {s:'\\tan','h':'tan'}
+  ],
+  greek: 'alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu nu xi pi rho sigma tau upsilon phi chi psi omega'.split(' ').map(x=>{
+    const ents = {alpha:945,beta:946,gamma:947,delta:948,epsilon:949,zeta:950,eta:951,theta:952,iota:953,kappa:954,lambda:955,mu:956,nu:957,xi:958,pi:960,rho:961,sigma:962,tau:963,upsilon:964,phi:966,chi:967,psi:968,omega:969};
+    return {s:'\\'+x, h:'&#'+ents[x]+';'};
+  }),
+  op: [
+    {s:'\\sum',h:'∑'}, {s:'\\int',h:'∫'}, {s:'\\oint',h:'∮'}, {s:'\\prod',h:'∏'}, {s:'\\bigcap',h:'⋂'},
+    {s:'\\bigcup',h:'⋃'}, {s:'\\partial',h:'∂'}, {s:'\\nabla',h:'∇'}
+  ],
+  arr: [
+    {s:'\\rightarrow',h:'→'}, {s:'\\leftarrow',h:'←'}, {s:'\\leftrightarrow',h:'↔'}, {s:'\\Rightarrow',h:'⇒'},
+    {s:'\\Leftarrow',h:'⇐'}, {s:'\\Leftrightarrow',h:'⇔'}, {s:'\\to',h:'→'}, {s:'\\longrightarrow',h:'⟶'}
+  ],
+  misc: [
+    {s:'\\in',h:'∈'}, {s:'\\notin',h:'∉'}, {s:'\\subset',h:'⊂'}, {s:'\\supset',h:'⊃'}, {s:'\\subseteq',h:'⊆'},
+    {s:'\\supseteq',h:'⊇'}, {s:'\\forall',h:'∀'}, {s:'\\exists',h:'∃'}, {s:'\\emptyset',h:'∅'}, {s:'\\mathbb{R}',h:'ℝ'}
+  ]
+};
+
+/* ========= 动态生成键盘 ========= */
+Object.keys(map).forEach(k=>{
+  const grid = document.createElement('div');
+  grid.className = 'key-grid'; grid.id = 'grid-'+k;
+  map[k].forEach(o=>{
+    const key = document.createElement('div');
+    key.className = 'key';
+    key.innerHTML = `<span class="sym">${o.h}</span><span class="latex">${o.s}</span>`;
+    key.onclick = ()=>insertSym(o.s);
+    grid.appendChild(key);
+  });
+  document.getElementById('kbBody').appendChild(grid);
+});
+document.getElementById('grid-basic').classList.add('active');
+
+/* ========= 标签切换 ========= */
+document.querySelectorAll('.tab').forEach(tab=>{
+  tab.onclick = ()=>{
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.key-grid').forEach(g=>g.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('grid-'+tab.dataset.grid).classList.add('active');
+  };
+});
+
+/* ========= 插入符号 ========= */
+function insertSym(s){
+  const ta = document.getElementById('multiInput');
+  const [a,b] = [ta.selectionStart, ta.selectionEnd];
+  ta.value = ta.value.slice(0,a) + s + ta.value.slice(b);
+  ta.focus();
+  ta.setSelectionRange(a+s.length, a+s.length);
+  renderMulti();
+}
+
+/* ========= 多行渲染 ========= */
+let tmr;
+function renderMulti(){
+  clearTimeout(tmr);
+  tmr = setTimeout(()=>{
+    const lines = document.getElementById('multiInput').value.split('\n').filter(x=>x.trim());
+    const box = document.getElementById('previewArea');
+    box.innerHTML = '';
+    lines.forEach(l=>{
+      const div = document.createElement('div');
+      div.textContent = l.trim().startsWith('$$') ? l : '$$'+l+'$$';
+      box.appendChild(div);
+    });
+    MathJax.typesetPromise([box]).then(()=>status('渲染完成')).catch(()=>status('渲染失败'));
+  },250);
+}
+
+/* ========= 顶部按钮 ========= */
+document.getElementById('btnClear').onclick = ()=>{
+  if(confirm('清空全部？')){document.getElementById('multiInput').value='';renderMulti();}
+};
+document.getElementById('btnCopy').onclick = ()=>{
+  const v = document.getElementById('multiInput').value;
+  if(!v) return status('无内容');
+  navigator.clipboard.writeText(v).then(()=>status('已复制'));
+};
+document.getElementById('btnSave').onclick = ()=>{
+  const v = document.getElementById('multiInput').value;
+  if(!v) return status('无内容');
+  const hist = JSON.parse(localStorage.getItem('fx')||'[]');
+  hist.push({t:v,ts:new Date().toLocaleString('zh-CN')});
+  localStorage.setItem('fx',JSON.stringify(hist));
+  status('已保存');
+};
+function status(msg){
+  document.getElementById('status').textContent = msg;
+  setTimeout(()=>document.getElementById('status').textContent='就绪',2000);
+}
+
+/* ========= 快捷键 ========= */
+addEventListener('keydown',e=>{
+  if(e.ctrlKey){
+    if(e.key==='Enter'){e.preventDefault(); renderMulti();}
+    if(e.key==='s'){e.preventDefault(); document.getElementById('btnSave').click();}
+    if(e.key==='c'&&e.shiftKey){e.preventDefault(); document.getElementById('btnCopy').click();}
+  }
+});
+
+/* ========= 初始渲染 ========= */
+MathJax.typesetPromise([document.getElementById('previewArea')]);
+</script>
+</body>
+</html>
+
